@@ -43,3 +43,7 @@
 | W16 | 0611 | Readings and report | |
 | W17 | 0618 | Dragon Boat Festival| |
 | W18 | 0625 | Final report | |
+## Group and members
+|Group|Members|
+|-----|-----|
+|Journalism|* Tutor: 陳潔|
