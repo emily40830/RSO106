@@ -21,32 +21,21 @@
 - http://web.stanford.edu/class/cs224n/
 
 ## Calendar
-| W01 | 0226 | Course overview                                                                                           | Team up!    |
-| --- | ---- | --------------------------------------------------------------------------------------------------------- | ----------- |
-| W02 | 0305 | R basic                                                                                                   | NAS1.       |
-| W03 | 0312 | R text processing basic
-Chap01                                                                            | NAS2.
-VAS1. |
-| W04 | 0319 | Chap03, Chap04                                                                                            | NAS3.       |
-| W05 | 0326 | Network visualization                                                                                     | NAS4.       |
-| W06 | 0402 | Spring vocation                                                                                           |             |
-| W07 | 0409 | Chap05 topic modeling
-How can we make topic modeling perform better?                                      | NAS5.       |
-| W08 | 0416 | Readings and report: mining text for social theory                                                        |             |
-| W09 | 0423 | Supervised learning for text
-(Text classification)
-Naive Bayes Classification
-LASSO for feature selection |             |
-| W10 | 0430 | Readings and report                                                                                       |             |
-| W11 | 0507 | CAECAT presentation                                                                                       | V+NAS2      |
-| W12 | 0514 | Readings and report                                                                                       |             |
-| W13 | 0521 | Stock prediction SVM and OLS                                                                              | NAS6        |
-| W14 | 0528 | Readings and report                                                                                       |             |
-| W15 | 0604 | Supervised learning for text
-SVM、OLS、…                                                                    |             |
-| W16 | 0611 | Readings and report                                                                                       |             |
-| W17 | 0618 | Dragon Boat Festival                                                                                      |             |
-| W18 | 0625 | Final report                                                                                              |             |
-
-
-
+| W01 | 0226 | Course overview | Team up!|
+| W02 | 0305 | R basic | NAS1.|
+| W03 | 0312 | R text processing basic Chap01 | NAS2. VAS1. |
+| W04 | 0319 | Chap03, Chap04 | NAS3. |
+| W05 | 0326 | Network visualization| NAS4. |
+| W06 | 0402 | Spring vocation| |
+| W07 | 0409 | Chap05 topic modeling: How can we make topic modeling perform better?|NAS5.|
+| W08 | 0416 | Readings and report: mining text for social theory | |
+| W09 | 0423 | Supervised learning for text (Text classification), Naive Bayes Classification, LASSO for feature selection| |
+| W10 | 0430 | Readings and report | |
+| W11 | 0507 | CAECAT presentation | V+NAS2 |
+| W12 | 0514 | Readings and report | |
+| W13 | 0521 | Stock prediction SVM and OLS | NAS6|
+| W14 | 0528 | Readings and report | |
+| W15 | 0604 | Supervised learning for text SVM、OLS、… | |
+| W16 | 0611 | Readings and report | |
+| W17 | 0618 | Dragon Boat Festival| |
+| W18 | 0625 | Final report | |
