@@ -1,4 +1,4 @@
-# RSocialOpinion106
+# Mingin Social Opinions
 * https://classroom.github.com/classrooms/37053694-mining-social-opinion
 
 ## Announcement
