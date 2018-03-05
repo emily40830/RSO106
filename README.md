@@ -21,8 +21,9 @@
 - http://web.stanford.edu/class/cs224n/
 
 ## Calendar
+| Week | Date | Description | Activities|
+|-----|-----|-----|-----|
 | W01 | 0226 | Course overview | Team up!|
-|-|-|-|
 | W02 | 0305 | R basic | NAS1.|
 | W03 | 0312 | R text processing basic Chap01 | NAS2. VAS1. |
 | W04 | 0319 | Chap03, Chap04 | NAS3. |
