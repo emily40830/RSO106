@@ -47,4 +47,5 @@
 ## Group and members
 |Group|Members|
 |-----|-----|
-|Journalism|<ul><li>[R1234567陳潔](http://www.google.com)(tutor)</li><li>[R1234567莊忻倫](http://www.google.com)(tutor)</li></ul>|
+|Journalism|[R1234567陳潔](http://www.google.com)(tutor)、[R1234567莊忻倫](http://www.google.com)(tutor)|
+|G2|[R1234567陳潔](http://www.google.com)(tutor)、[R1234567莊忻倫](http://www.google.com)(tutor)|
