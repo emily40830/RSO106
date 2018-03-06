@@ -7,7 +7,7 @@
 * [Slide00. R Basic](https://docs.google.com/presentation/d/e/2PACX-1vRjb_W1Vo9-zD9F4FmWOiB6K4ezkF6W64OKcX7bZD6ordKvOT-6LFoGi0le-HzT2ABKudDNhr_qKt2x/pub?start=false&loop=false&delayms=3000&slide=id.g2074c710b4_0_293)
 * Creating your own and group github repository!
 * [VAS01: Crawling data for practice](VAS01.md): No later than 3/12
-* [AS01: DataCamp Practice](https://www.datacamp.com/courses/free-introduction-to-r): Consulting your tutor and finishing the practice before 3/11 23:59.
+* [AS01: DataCamp Practice](https://github.com/R4CSS/Assignments/blob/master/01DataCamp.md): Complete the practice before 3/11 23:59. If you have any problem, please consult your tutor.
 ## INTRODUCTION
 ### Textbooks
 * David Robinson and Julia Silge (2017). [Text Mining with R: A Tidy Approach](http://tidytextmining.com/). O’Reilly.
