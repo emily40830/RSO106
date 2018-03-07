@@ -1,8 +1,11 @@
 # Mingin Social Opinions
+
 * https://classroom.github.com/classrooms/37053694-mining-social-opinion
 
 ## Announcement
+
 ### 2018/03/05
+
 * [Slide00. Install](https://docs.google.com/presentation/d/e/2PACX-1vSNj-P2-8cJptSy-eRMKXs4eSNgLgeaCHiF22THEDkmijIXaqFA8U67T3Lp-iR0ibXssD-NHUq5DEG2/pub?start=false&loop=false&delayms=3000), [installing R](https://cran.r-project.org/), [RStudio](https://www.rstudio.com/products/rstudio/download/#download).
 * [Slide00. R Basic](https://docs.google.com/presentation/d/e/2PACX-1vRjb_W1Vo9-zD9F4FmWOiB6K4ezkF6W64OKcX7bZD6ordKvOT-6LFoGi0le-HzT2ABKudDNhr_qKt2x/pub?start=false&loop=false&delayms=3000&slide=id.g2074c710b4_0_293)
 * Creating your own and group github repository!
@@ -14,6 +17,7 @@
 * Garrett Grolemund and Hadley Wickham (2017). [R for Data Science](http://r4ds.had.co.nz/index.html). O’Reilly.
 
 ### Books and online learning resources
+
 * [Datacamp for R](https://www.datacamp.com/courses/tech:r)
 * [Learning R in Y minutes](https://learnxinyminutes.com/docs/r/)
 * [R Graphics Cookbook](http://www.cookbook-r.com/Graphs/)
@@ -22,13 +26,15 @@
 * [R for data mining](http://www.rdatamining.com/)
 
 ### Related courses
+
 - http://web.stanford.edu/class/cs224n/
 
 ## Calendar
+
 | Week | Date | Description | Activities|
 |-----|-----|-----|-----|
 | W01 | 0226 | Course overview | Team up!|
-| W02 | 0305 | R basic: [Slide00. Install](https://docs.google.com/presentation/d/e/2PACX-1vSNj-P2-8cJptSy-eRMKXs4eSNgLgeaCHiF22THEDkmijIXaqFA8U67T3Lp-iR0ibXssD-NHUq5DEG2/pub?start=false&loop=false&delayms=3000), [Slide00. R Basic](https://docs.google.com/presentation/d/e/2PACX-1vRjb_W1Vo9-zD9F4FmWOiB6K4ezkF6W64OKcX7bZD6ordKvOT-6LFoGi0le-HzT2ABKudDNhr_qKt2x/pub?start=false&loop=false&delayms=3000&slide=id.g2074c710b4_0_293)| NAS1.|
+| W02 | 0305 | R basic: [R00.Install](https://docs.google.com/presentation/d/e/2PACX-1vSNj-P2-8cJptSy-eRMKXs4eSNgLgeaCHiF22THEDkmijIXaqFA8U67T3Lp-iR0ibXssD-NHUq5DEG2/pub?start=false&loop=false&delayms=3000), [R01.RBasic](https://docs.google.com/presentation/d/e/2PACX-1vRjb_W1Vo9-zD9F4FmWOiB6K4ezkF6W64OKcX7bZD6ordKvOT-6LFoGi0le-HzT2ABKudDNhr_qKt2x/pub?start=false&loop=false&delayms=3000&slide=id.g2074c710b4_0_293)| NAS1.|
 | W03 | 0312 | R text processing basic Chap01 | NAS2. VAS1. |
 | W04 | 0319 | Chap03, Chap04 | NAS3. |
 | W05 | 0326 | Network visualization| NAS4. |
@@ -45,7 +51,9 @@
 | W16 | 0611 | Readings and report | |
 | W17 | 0618 | Dragon Boat Festival| |
 | W18 | 0625 | Final report | |
+
 ## Group and members
+
 |Group|Members|
 |-----|-----|
 |G1Yo|[R1234567陳潔](http://www.google.com)(tutor)、[R1234567莊忻倫](http://www.google.com)(tutor)|
