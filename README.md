@@ -1,6 +1,7 @@
 # Mingin Social Opinions
 
 * https://classroom.github.com/classrooms/37053694-mining-social-opinion
+* [A cheatsheep for looking up commands](RCheatSheep.pdf)
 
 ## Announcement
 
