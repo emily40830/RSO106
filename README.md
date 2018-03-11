@@ -13,8 +13,8 @@
 
 ### 2018/03/05
 
-* [Slide00. Install](https://docs.google.com/presentation/d/e/2PACX-1vSNj-P2-8cJptSy-eRMKXs4eSNgLgeaCHiF22THEDkmijIXaqFA8U67T3Lp-iR0ibXssD-NHUq5DEG2/pub?start=false&loop=false&delayms=3000), [installing R](https://cran.r-project.org/), [RStudio](https://www.rstudio.com/products/rstudio/download/#download).
-* [Slide00. R Basic](https://docs.google.com/presentation/d/e/2PACX-1vRjb_W1Vo9-zD9F4FmWOiB6K4ezkF6W64OKcX7bZD6ordKvOT-6LFoGi0le-HzT2ABKudDNhr_qKt2x/pub?start=false&loop=false&delayms=3000&slide=id.g2074c710b4_0_293) (cont. after creating vector)
+* [R00. Install](https://docs.google.com/presentation/d/e/2PACX-1vSNj-P2-8cJptSy-eRMKXs4eSNgLgeaCHiF22THEDkmijIXaqFA8U67T3Lp-iR0ibXssD-NHUq5DEG2/pub?start=false&loop=false&delayms=3000), [installing R](https://cran.r-project.org/), [RStudio](https://www.rstudio.com/products/rstudio/download/#download).
+* [R01. R Basic](https://docs.google.com/presentation/d/e/2PACX-1vRjb_W1Vo9-zD9F4FmWOiB6K4ezkF6W64OKcX7bZD6ordKvOT-6LFoGi0le-HzT2ABKudDNhr_qKt2x/pub?start=false&loop=false&delayms=3000&slide=id.g2074c710b4_0_293) (cont. after creating vector)
 * Creating your own and group github repository!
 * [VAS01: Crawling data for practice](VAS01.md): No later than 3/12
 * [AS01: DataCamp Practice](https://github.com/R4CSS/Assignments/blob/master/01DataCamp.md): Complete the practice before 3/11 23:59. If you have any problem, please consult your tutor.
