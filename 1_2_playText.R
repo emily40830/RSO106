@@ -97,6 +97,9 @@ library(httr)
 url <- "https://www.dcard.tw/_api/forums/relationship/posts?popular=true"
 res <- fromJSON(content(GET(url), "text"))
 
+res <- res %>%
+    select(-topics, -tags, -media)
 
-
+stopWords <- readRDS(url("https://github.com/R4CSS/RSO106/raw/master/data/stopWords.rds"))
+stopWords <- as.data.frame(stopWords)
 
