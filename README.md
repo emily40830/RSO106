@@ -1,6 +1,5 @@
 # Mingin Social Opinions
 
-* https://classroom.github.com/classrooms/37055771-r-for-computational-social-science
 * [A cheatsheep for looking up commands](RCheatSheep.pdf)
 
 ## Announcement
