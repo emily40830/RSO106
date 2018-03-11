@@ -8,7 +8,7 @@
 
 * [TM00. Text mining intro](https://docs.google.com/presentation/d/e/2PACX-1vQH2YgMFgMUzXis8EqqReufWx1sViFyU24K0bUzzzUy_knywzz9051SzwMWN2qWjjs5IjhJZS6PhZ1X/pub?start=false&loop=false&delayms=3000)
 * [TM01. Text mining basic](https://docs.google.com/presentation/d/e/2PACX-1vThdGCnMHpppPqIjtC5kDtpM1sgeO_-U59DrvqaMrESJUm1yZ1lhPZwfeX3rUfSk1nn9JL7jyynE2Gg/pub?start=false&loop=false&delayms=3000): Using tidy approach
-* [AS02: Term frequency of Chinese text](https://github.com/R4CSS/Assignments/blob/master/TM01_termFreq.md): Submitting toe term-frequency plot to Cieba. Also explain the dataset you used on Ceiba. No later than 03/18 23:59.
+* [NAS02: Term frequency of Chinese text](https://github.com/R4CSS/Assignments/blob/master/TM01_termFreq.md): Submitting toe term-frequency plot to Cieba. Also explain the dataset you used on Ceiba. No later than 03/18 23:59.
 
 
 ### 2018/03/05
@@ -40,9 +40,9 @@
 
 | Week | Date | Description | Activities|
 |-----|-----|-----|-----|
-| W01 | 0226 | Course overview [TM00. Text mining intro](https://docs.google.com/presentation/d/e/2PACX-1vQH2YgMFgMUzXis8EqqReufWx1sViFyU24K0bUzzzUy_knywzz9051SzwMWN2qWjjs5IjhJZS6PhZ1X/pub?start=false&loop=false&delayms=3000)| Team up!|
-| W02 | 0305 | R basic: [R00.Install](https://docs.google.com/presentation/d/e/2PACX-1vSNj-P2-8cJptSy-eRMKXs4eSNgLgeaCHiF22THEDkmijIXaqFA8U67T3Lp-iR0ibXssD-NHUq5DEG2/pub?start=false&loop=false&delayms=3000), [R01.RBasic](https://docs.google.com/presentation/d/e/2PACX-1vRjb_W1Vo9-zD9F4FmWOiB6K4ezkF6W64OKcX7bZD6ordKvOT-6LFoGi0le-HzT2ABKudDNhr_qKt2x/pub?start=false&loop=false&delayms=3000&slide=id.g2074c710b4_0_293)| [AS01: DataCamp Practice](https://github.com/R4CSS/Assignments/blob/master/01DataCamp.md), [VAS01: Crawling data for practice](VAS01.md)|
-| W03 | 0312 | R text processing basic Chap01. [TM01. Text mining basic](https://docs.google.com/presentation/d/e/2PACX-1vThdGCnMHpppPqIjtC5kDtpM1sgeO_-U59DrvqaMrESJUm1yZ1lhPZwfeX3rUfSk1nn9JL7jyynE2Gg/pub?start=false&loop=false&delayms=3000). | NAS2. VAS1. |
+| W01 | 0226 | Course overview <br/>[TM00. Text mining intro](https://docs.google.com/presentation/d/e/2PACX-1vQH2YgMFgMUzXis8EqqReufWx1sViFyU24K0bUzzzUy_knywzz9051SzwMWN2qWjjs5IjhJZS6PhZ1X/pub?start=false&loop=false&delayms=3000)| Team up!|
+| W02 | 0305 | R basic: <br/>[R00.Install](https://docs.google.com/presentation/d/e/2PACX-1vSNj-P2-8cJptSy-eRMKXs4eSNgLgeaCHiF22THEDkmijIXaqFA8U67T3Lp-iR0ibXssD-NHUq5DEG2/pub?start=false&loop=false&delayms=3000)<br/>[R01.RBasic](https://docs.google.com/presentation/d/e/2PACX-1vRjb_W1Vo9-zD9F4FmWOiB6K4ezkF6W64OKcX7bZD6ordKvOT-6LFoGi0le-HzT2ABKudDNhr_qKt2x/pub?start=false&loop=false&delayms=3000&slide=id.g2074c710b4_0_293)| [AS01: DataCamp Practice](https://github.com/R4CSS/Assignments/blob/master/01DataCamp.md)<br/>[VAS01: Crawling data for practice](VAS01.md)|
+| W03 | 0312 | R text processing basic Chap01. <br/>[TM01. Text mining basic](https://docs.google.com/presentation/d/e/2PACX-1vThdGCnMHpppPqIjtC5kDtpM1sgeO_-U59DrvqaMrESJUm1yZ1lhPZwfeX3rUfSk1nn9JL7jyynE2Gg/pub?start=false&loop=false&delayms=3000). | [NAS02: Term frequency of Chinese text](https://github.com/R4CSS/Assignments/blob/master/TM01_termFreq.md)|
 | W04 | 0319 | Chap03, Chap04 | NAS3. |
 | W05 | 0326 | Network visualization| NAS4. |
 | W06 | 0402 | Spring vocation| |
