@@ -5,6 +5,12 @@
 
 ## Announcement
 
+### 2018/03/12
+
+* [TM00. Text mining intro](https://docs.google.com/presentation/d/e/2PACX-1vQH2YgMFgMUzXis8EqqReufWx1sViFyU24K0bUzzzUy_knywzz9051SzwMWN2qWjjs5IjhJZS6PhZ1X/pub?start=false&loop=false&delayms=3000)
+* [TM01. Text mining baskc](https://docs.google.com/presentation/d/e/2PACX-1vThdGCnMHpppPqIjtC5kDtpM1sgeO_-U59DrvqaMrESJUm1yZ1lhPZwfeX3rUfSk1nn9JL7jyynE2Gg/pub?start=false&loop=false&delayms=3000): Using tidy approach
+* [AS02: Term frequency of Chinese text]
+
 ### 2018/03/05
 
 * [Slide00. Install](https://docs.google.com/presentation/d/e/2PACX-1vSNj-P2-8cJptSy-eRMKXs4eSNgLgeaCHiF22THEDkmijIXaqFA8U67T3Lp-iR0ibXssD-NHUq5DEG2/pub?start=false&loop=false&delayms=3000), [installing R](https://cran.r-project.org/), [RStudio](https://www.rstudio.com/products/rstudio/download/#download).
