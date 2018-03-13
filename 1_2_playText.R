@@ -31,17 +31,20 @@ hist(nchar(tweets$text), breaks = 20)
 
 # Seperating sentences to words -------------------------------------------
 # https://www.tidytextmining.com/tidytext.html
-??unnest_tokens
+??unnest_tokens #斷詞斷句
 
 library(tidytext)
 unnest.df <- unnest_tokens(tweets, word, text, drop = FALSE)
 unnest.df <- unnest_tokens(tweets, word, text, to_lower = TRUE)
+
+count(unnest.df, word,sort= TRUE)
 
 
 
 # Removing stop words -----------------------------------------------------
 
 data(stop_words)
+View(stop_words)
 stop.df <- anti_join(unnest.df, stop_words)
 
 
@@ -100,6 +103,19 @@ res <- fromJSON(content(GET(url), "text"))
 res <- res %>%
     select(-topics, -tags, -media)
 
-stopWords <- readRDS(url("https://github.com/R4CSS/RSO106/raw/master/data/stopWords.rds"))
-stopWords <- as.data.frame(stopWords)
+?unnest_tokens
 
+unnested.df <- unnest_tokens(res, word, excerpt, drop = FALSE)
+
+
+# stopWords <- readRDS(url("https://github.com/R4CSS/RSO106/raw/master/data/stopWords.rds"))
+stopWords <- readRDS("data/stopWords.rds")
+stopWords <- as.data.frame(stopWords)
+names(stopWords) <- "word"
+
+test.stop.df <- anti_join(unnested.df, stopWords)
+
+word_freq <- res %>%
+    unnest_tokens(word, excerpt, drop = FALSE) %>%
+    anti_join(stopWords) %>%
+    count(word, sort = TRUE)
