@@ -1,4 +1,4 @@
-# Mingin Social Opinions
+# https://github.com/R4CSS/RSO106
 
 * [A cheatsheep for looking up commands](RCheatSheep.pdf)
 
