@@ -1,6 +1,7 @@
 # https://github.com/R4CSS/RSO106
 
 * [A cheatsheep for looking up commands](RCheatSheep.pdf)
+* [Dropbox link of the project](https://www.dropbox.com/sh/g9c3bw82kukyksu/AADAvGTCP5MtchM75E4Pep9fa?dl=0)
 
 ## Announcement
 
