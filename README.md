@@ -5,6 +5,9 @@
 
 ## Announcement
 
+### 2018/03/19
+* **NAS03: tf-idf of Chinese text**: Using RMD to calculate tf_idf and zipf-law of your data. Zip xxx.rmd and xxx.nb.html into a file and submit it to ceiba. No later than 03/25 23:59.
+
 ### 2018/03/12
 
 * [TM00. Text mining intro](https://docs.google.com/presentation/d/e/2PACX-1vQH2YgMFgMUzXis8EqqReufWx1sViFyU24K0bUzzzUy_knywzz9051SzwMWN2qWjjs5IjhJZS6PhZ1X/pub?start=false&loop=false&delayms=3000)
