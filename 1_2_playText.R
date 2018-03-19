@@ -79,10 +79,6 @@ unnested %>%
     ggplot(aes(word, n)) +
     geom_col() +
     coord_flip()
-
-
-
-
 # Toward Chinese text processing ------------------------------------------
 
 library(stringr)
@@ -110,8 +106,6 @@ unnested.df <- unnest_tokens(res, word, excerpt, drop = FALSE)
 
 # stopWords <- readRDS(url("https://github.com/R4CSS/RSO106/raw/master/data/stopWords.rds"))
 stopWords <- readRDS("data/stopWords.rds")
-stopWords <- as.data.frame(stopWords)
-names(stopWords) <- "word"
 
 test.stop.df <- anti_join(unnested.df, stopWords)
 

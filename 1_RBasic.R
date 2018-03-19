@@ -1,10 +1,10 @@
 # Slide: https://docs.google.com/presentation/d/e/2PACX-1vRjb_W1Vo9-zD9F4FmWOiB6K4ezkF6W64OKcX7bZD6ordKvOT-6LFoGi0le-HzT2ABKudDNhr_qKt2x/pub?start=false&loop=false&delayms=3000&slide=id.g2074c710b4_0_293
-# 2017/09/24 Updated 
+# 2017/09/24 Updated
 
 
 # 0. Installing essential packages ----------------------------------------
 # install a pacakge from R-cran https://cran.r-project.org/web/packages/available_packages_by_name.html
-# The package will be downloaded and installed to your computer, 
+# The package will be downloaded and installed to your computer,
 # BUT not yet loaded into your current environment.
 install.packages("tidyverse")
 
@@ -14,8 +14,38 @@ install.packages("tidyverse")
 # 0. The data -------------------------------------------------------------
 
 load(url("http://varianceexplained.org/files/trump_tweets_df.rda"))
-View(trump_tweets_df)
+df <- trump_tweets_df
 
+fliter.df <- df[df$favoriteCount > mean(df$favoriteCount) +2*sd (df$favoriteCount),]
+View(fliter.df)
+
+fliter.df2 <- df[df$retweetCount > mean(df$retweetCount) + 2* sd (df$retweetCount),]
+
+order.df <- df[order(df$favoriteCount, decreasing = TRUE),]
+View(order.df[1:10,])
+
+library(jsonlite)
+library(httr)
+hist(df$favoriteCount, breaks = 1000)
+
+df$nchar <-nchar (df$text)
+hist(df$nchar, breaks= 1000)
+
+View(order.df[ ,c(1,3,5,8,10,12)]
+View(order.df[, c("text","favoriteCount")]
+
+View(df)
+head(df)
+class(df)
+str(df)
+
+class(df$text)
+class(df$truncated)
+df$truncated
+class(df$favoriteCount)
+class(df)
+mode(df)
+?mode
 
 library(jsonlite)
 library(httr)
@@ -24,7 +54,7 @@ url <- "https://www.dcard.tw/_api/forums/relationship/posts?popular=true"
 res <- fromJSON(content(GET(url), "text"))
 View(res)
 
-fburl <- 
+fburl <-
 	"https://graph.facebook.com/v2.10/DoctorKoWJ?fields=posts&access_token=188730144854871|1lL4a4CTRymAHvoKxnJDQqvqVdc"
 
 res <- fromJSON(content(GET(fburl), "text"))
@@ -79,8 +109,14 @@ country <- c("CN", "US", "JP", "HK", "KR", "SG", "DE", "MY", "VN", "PH", "TH", "
 buyin <- c(26.142, 12.008, 7.032, 13.646, 4.589, 5.768, 2.131, 2.802, 3.428, 3.019, 1.976, 1.118, 1.624, 0.449, 0.983, 1.302, 1.027, 0.553, 0.670, 0.455)
 buyout <- c(22.987, 12.204, 11.837, 7.739, 5.381, 4.610, 2.866, 2.784, 2.414, 2.092, 1.839, 1.788, 1.665, 1.409, 1.391, 1.075, 0.974, 0.899, 0.800, 0.728)
 
+country[c (1,3,5)]
+
+
 # create by sequence
 a <- seq(11, 99, 11)
+a
+a[3:length(a)]
+a[length(a):3]
 b <- 11:20
 
 # create by distribution
@@ -139,17 +175,27 @@ a
 
 
 # v5. Concatenate two or three vectors  ---------------------------------------
-
-a <- c(a, 3)
+a <- 1:10
+a <- c(a, 11)
+a
+b
 a <- c(a, b)
+a
 a <- c(a, a, b)
-
+a
 
 
 # v6. Arithmetic operations ---------------------------------------------------
+a <- 11:19
+a + 3
+a / 2
 
-a <- a + 3
-a <- a / 2
+a %% 2
+a %/% 2
+a %% 2== 0
+a %% 2 != 0
+a[a%% 2 == 0]
+a[a%%2 != 0]
 a <- a %% 2 	# modular arithmetic, get the reminder
 a <- a %/% 2 	# Quotient
 
@@ -164,7 +210,7 @@ a > b
 buyin > mean(buyin)
 buyin > buyout
 
-TRUE == T 		# == equal to, 
+TRUE == T 		# == equal to,
 TRUE != F    	# != Not equal to
 
 any(a>11) # is there any element larger than 1
@@ -177,6 +223,8 @@ a[c(T, F, T, F, T)]
 a[a%%2==1]
 a%%2
 a%%2==1
+a <- c("你好","你好棒棒","你好棒","你真的好棒")
+a[nchar(a)>3]
 
 # which will return "index-of"
 a[which(a%%2==1)]
@@ -211,7 +259,7 @@ x.b <- c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k")
 # v8. Sorting -----------------------------------------------------------------
 
 c <- c(33, 55, 22, 13, 4, 24)
-rev(c)
+
 
 # Sort it directly
 sort(c)
@@ -228,7 +276,7 @@ c <- sort(c)
 
 
  # v9. Math functions ----------------------------------------------------------
-
+a <- 11:19
 min(a); max(a); mean(a); median(a); sd(a)
 log2(a)
 log1p(a)
@@ -240,7 +288,7 @@ log1p(a)
 
 mode(country)				# character
 mode(buyin)					# numeric
-mode(buyin > mean(buyin))	# logical 
+mode(buyin > mean(buyin))	# logical
 
 buyinc <- c("26.142", "12.008", "7.032", "13.646", "4.589")
 mode(buyinc)				# character
@@ -281,7 +329,7 @@ df <- data.frame(country, buyin, buyout, stringsAsFactors = FALSE)
 str(df)
 
 
-
+#df [列,行]
 
 # df5. Arithmetic operatoins between variables ----------------------------
 

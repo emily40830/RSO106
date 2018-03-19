@@ -1,0 +1,200 @@
+---
+title: "TM01_trump_tweets"
+output: 
+  html_notebook: 
+    code_folding: hide
+    number_sections: true
+    fig_caption: yes
+    highlight: zenburn
+    theme: simplex
+    toc: yes
+---
+
+# Loading data
+
+```{r}
+library(tidyverse)
+library(stringr)
+library(tidytext)
+```
+
+
+```{r}
+load(url("http://varianceexplained.org/files/trump_tweets_df.rda"))
+tweets <- trump_tweets_df
+names(tweets)
+```
+
+# Word and character distribution
+
+
+## nchar distribution
+```{r}
+tweets %>%
+    mutate(nchar = nchar(text)) %>%
+    # select(text, nchar, everything()) %>%
+    count(nchar) %>%
+    mutate(highfreq=ifelse(n > quantile(n, 0.9), "high", "other")) %>%
+    ggplot(aes(nchar, n, fill = highfreq)) + 
+    geom_col() + 
+    xlab("number of character") + 
+    scale_fill_manual(values=c("high"="tomato", "other"="gray"), guide=F)
+```
+
+## unnest text to word
+```{r}
+data(stop_words)
+unnested <- tweets %>%
+    mutate(text = str_replace_all(text, "https://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+    unnest_tokens(word, text, token = "regex", pattern = "[^A-Za-z\\d#@']", drop=FALSE) %>%
+    anti_join(stop_words)
+```
+
+## sorted by word frequency
+
+```{r}
+unnested %>%
+    count(word) %>%
+    mutate(word = reorder(word, n)) %>%
+    top_n(50) %>%
+    mutate(ismedia = ifelse(str_detect(word, "@.*|#.*"), "ismedia", "other")) %>%
+    ggplot(aes(word, n, fill=ismedia)) + 
+    geom_col() + 
+    coord_flip() + 
+    scale_fill_manual(values=c("ismedia"="tomato", "other"="gray"), guide=F)
+    
+```
+
+
+## word frequency distribution
+```{r}
+unnested %>%
+    count(word) %>%
+    count(n) %>%
+    ggplot(aes(n, nn)) + 
+    geom_col() + 
+    ggtitle("Word frequency distribution") + 
+    xlab("word frequency") + ylab("Distribution") + 
+    theme(plot.title = element_text(hjust = 0.5))
+```
+
+* Number of words per doc.
+```{r}
+
+
+unnested %>%
+    count(id) %>%
+    ggplot(aes(n))  + 
+    geom_histogram()
+```
+
+## wordcloud
+* Mentioned in 陳世榮（2015）. Bock對於目前相當流行的文字雲（word cloud）批評指出， 文字雲並不具備科學或推論意義，它僅是基於「文字頻率代表某種意義」的假設下，提供 了讀者一種無限制的解讀（Bock, 2009）
+。
+```
+pal_r <- brewer.pal(9, "PuRd")[-(1:2)]
+wordcloud(words = y2016$word, freq = y2016$logratio, min.freq = 1,
+	random.order = F, colors = pal_g, max.words = 100, rot.per = 0)
+```
+
+```{r}
+library(wordcloud)
+
+pal_g <- brewer.pal(9, "BuGn")[-(1:2)]
+
+
+unnested %>%
+    count(word) %>%
+    with(wordcloud(word, n, max.words = 100, 
+                   random.order = F, 
+                   colors = brewer.pal(9, "BuGn")[-(1:2)], 
+                   rot.per = 0))
+```
+
+# Sentiment analysis
+```{r}
+library(tidytext)
+sentiments
+```
+
+* The three general-purpose lexicons are
+    * `afinn` from Finn Årup Nielsen,
+    * `bing` from Bing Liu and collaborators, and
+    * `nrc` from Saif Mohammad and Peter Turney.
+
+```{r}
+get_sentiments("afinn")
+get_sentiments("bing")
+get_sentiments("nrc")
+```
+```{r}
+unnested %>%
+    count(word) %>%
+    inner_join(get_sentiments("afinn")) %>%
+    arrange(desc(n)) %>%
+    slice(1:50) %>%
+    mutate(PN = ifelse(score > 0, "positive", "negative")) %>%
+    mutate(word = reorder(word, n)) %>%
+    ggplot(aes(word, n, fill=PN)) + 
+    geom_col() + 
+    coord_flip()
+```
+
+```{r}
+library(reshape2)
+
+unnested %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
+  comparison.cloud(colors = c("royalblue", "tomato"),
+                   max.words = 100)
+```
+
+
+
+```{r}
+library(lubridate)
+
+summary(tweets$created)
+
+tweets.sentiment <- unnested %>%
+    inner_join(get_sentiments("bing")) %>%
+    count(id, sentiment) %>%
+    spread(sentiment, n, fill=0) %>%
+    mutate(sentiment=positive-negative) %>%
+    left_join(tweets, by="id") %>%
+    arrange(created) %>%
+    mutate(tindex=1:n())
+
+
+ggplot(tweets.sentiment, aes(tindex, sentiment)) + 
+    geom_col()
+```
+```{r}
+summarized <- tweets.sentiment %>%
+    mutate(yweek=sprintf("%s%02s",year(created), week(created))) %>%
+    group_by(yweek) %>%
+    summarize(
+        sumn = sum(negative),
+        sump = sum(positive)
+    )
+    
+summarized %>%
+    gather(sentiment, value, sumn, sump) %>%
+    ggplot(aes(yweek, value, fill=sentiment)) + 
+    geom_col(alpha=0.7, position="identity") + 
+    scale_fill_manual(values=c("sumn"="red", "sump"="blue"))
+# position: identity, stack, dodge
+
+summarized %>%
+    ggplot(aes(x=yweek, group=1)) +
+    geom_line(aes(y=sumn), color="tomato") + 
+    geom_line(aes(y=sump), color="royalblue")
+# + 
+#     facet_grid(sentiment~.)
+    
+    
+```
+
+
