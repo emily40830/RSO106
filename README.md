@@ -5,7 +5,9 @@
 
 ## Announcement
 
-### 2018/03/19
+### 2018/03/26 term co-occurrence network
+
+### 2018/03/19 sentiment analysis and tf_idf
 * **NAS03: tf-idf of Chinese text**: Using RMD to calculate tf_idf and zipf-law of your data. Zip xxx.rmd and xxx.nb.html into a file and submit it to ceiba. No later than 03/25 23:59.
 
 ### 2018/03/12
