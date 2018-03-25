@@ -8,6 +8,8 @@ output:
     highlight: zenburn
     theme: simplex
     toc: yes
+params: 
+  output_dir: "html/"
 ---
 
 # Loading data and library
@@ -175,13 +177,13 @@ news_count <- tokenized.df %>%
 
 
 ```{r}
-test <- news_count %>%
+news_count %>%
     left_join(news.df, by="link") %>%
     filter(!(word %in% c("NA"))) %>%
     group_by(cat == "early") %>%
     arrange(desc(tf_idf)) %>%
     top_n(30, tf_idf) %>%
-    ungroup()
+    ungroup() %>%
     mutate(word = reorder(word, tf_idf)) %>%
     ggplot(aes(word, tf_idf, fill = cat)) +
     geom_col(show.legend = FALSE) +

@@ -10,14 +10,36 @@ output:
     toc: yes
 ---
 
-# Loading data
+# Libraries
+* `tidyverse` is a collection of several useful packages.
+* `tidytext` implements tidy data principles to make many text mining tasks easier, more effective (Using `browseVignettes(package = "tidytext")` to get more information)
+*  `tidytext` package imeplements the following functions including ... 
+    * `get_sentiments()` to get a tidy data_frame of a single sentiemnt lexicon.
+    * `cast_tdm()` to cast a data frame to a DocumentTermMatrix.
+    * `unnest_tokens()` to tokenized sentence or text to words.
+    * `bind_tf_idf()` to create tf and idf variables
 
-```{r}
+```{r loading libraries}
 library(tidyverse)
 library(stringr)
 library(tidytext)
 ```
 
+
+* Setting global options firstly to ensure that character varaibles won't be converted to factor varaible.
+```{r global options}
+options(stringsAsFactors = FALSE)
+```
+
+
+# Loading data
+
+* 2015-06-16 to elect
+* 2016-05-03 in-party
+* 2016-09-16 1st debate 
+* 2016-11-08 2016 election
+
+### varianeexplained's data
 
 ```{r}
 load(url("http://varianceexplained.org/files/trump_tweets_df.rda"))
@@ -25,68 +47,157 @@ tweets <- trump_tweets_df
 names(tweets)
 ```
 
-# Word and character distribution
+## trump's data over 2016 election
+
+```{r}
+load("../_tweetAnalysis/alltweets.RData")
+all %>% summary()
+all$timestamp <- as.POSIXct(all$time)
+all$time <- NULL
+filtered.df <- all %>%
+    filter(timestamp > as.POSIXct("2014-12-01") & 
+               timestamp < as.POSIXct("2017-05-08"))
+```
+
+
+# Doc-Level analysis
+* **Doc properites**
+    * Number of document over time.
+    * nchar distribution to confirm the property of docs compared with other social media.
+* **User study** to confirm (whether) who are involved most in the data.
+    * Posting frequency
+    * Posting activity over time
+
+## Number of tweets over time
+* Adding four vertical lines to label different periods of elections. e.g., The first vline denotes the day of announcing to election.
+* No special difference was found during different periods of election process.
+```{r}
+filtered.df %>%
+    ggplot(aes(timestamp)) +
+    geom_histogram(bins=120) + 
+    geom_vline(xintercept = as.numeric(as.POSIXct(c("2015-06-16", "2016-05-03",
+                                                    "2016-09-16", "2016-11-08"))), 
+             color="red", alpha=0.5)
+
+
+filtered.df %>%
+    mutate(weeks = cut(timestamp, breaks="week")) %>%
+    count(weeks) %>%
+    ggplot(aes(as.Date(weeks), n)) +
+    geom_col() 
+
+```
+
+## by hour
+
+
+```{r}
+library(lubridate)
+filtered.df %>%
+    mutate(hm = hour(timestamp) + minute(timestamp)/60) %>%
+    ggplot(aes(timestamp, hm)) +
+    geom_point(color = "royalblue", alpha = 0.1, shape = 15) + 
+    geom_vline(xintercept = as.numeric(as.POSIXct(c("2015-06-16", "2016-05-03",
+                                                    "2016-09-16", "2016-11-08"))), 
+             color="red", alpha=0.5)
+```
 
 
 ## nchar distribution
+> ... We want every person around the world to easily express themselves on Twitter, so we're doing something new: we're going to try out a longer limit, 280 characters, in languages impacted by cramming (which is all except Japanese, Chinese, and Korean). https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
+
+
 ```{r}
-tweets %>%
+filtered.df %>%
     mutate(nchar = nchar(text)) %>%
     # select(text, nchar, everything()) %>%
     count(nchar) %>%
-    mutate(highfreq=ifelse(n > quantile(n, 0.9), "high", "other")) %>%
+    mutate(highfreq=ifelse(n > quantile(n, 0.9), 
+                           "high", "other")) %>%
     ggplot(aes(nchar, n, fill = highfreq)) + 
     geom_col() + 
     xlab("number of character") + 
-    scale_fill_manual(values=c("high"="tomato", "other"="gray"), guide=F)
+    scale_fill_manual(values=c("high"="tomato", 
+                               "other"="gray"), guide=F)
 ```
 
+# Word level analysis
+
 ## unnest text to word
+
 ```{r}
 data(stop_words)
-unnested <- tweets %>%
-    mutate(text = str_replace_all(text, "https://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
-    unnest_tokens(word, text, token = "regex", pattern = "[^A-Za-z\\d#@']", drop=FALSE) %>%
+unnested <- filtered.df %>%
+    mutate(text = str_replace_all(text, 
+                                  "https://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+    # unnest_tokens(word, text, drop = FALSE) %>%
+    unnest_tokens(word, text, 
+                  token = "regex", pattern = "[^A-Za-z\\d#@']", 
+                  drop=FALSE) %>%
     anti_join(stop_words)
 ```
 
-## sorted by word frequency
+## hot words
 
 ```{r}
+
 unnested %>%
     count(word) %>%
     mutate(word = reorder(word, n)) %>%
-    top_n(50) %>%
-    mutate(ismedia = ifelse(str_detect(word, "@.*|#.*"), "ismedia", "other")) %>%
+    top_n(50, wt = n) %>%
+    mutate(ismedia = ifelse(str_detect(word, "@.*|#.*"), 
+                            "tag", 
+                            "other")) %>%
     ggplot(aes(word, n, fill=ismedia)) + 
     geom_col() + 
     coord_flip() + 
-    scale_fill_manual(values=c("ismedia"="tomato", "other"="gray"), guide=F)
+    scale_fill_manual(values = c("tag" = "tomato", 
+                                 "other" = "gray"), 
+                      guide = F)
     
 ```
 
+## freuqnecy of word
+* The distribution follows an `power law distribution` (very few words occur very often, very many words occur very rare). The `Zipf law` says that the frequency of a word is reciprocal to its `rank (1 / r)`. To make the plot more readable, the axes can be logarithmized.
 
-## word frequency distribution
 ```{r}
 unnested %>%
     count(word) %>%
     count(n) %>%
     ggplot(aes(n, nn)) + 
-    geom_col() + 
+    geom_point(color = "royalblue", alpha=0.5) + 
     ggtitle("Word frequency distribution") + 
     xlab("word frequency") + ylab("Distribution") + 
-    theme(plot.title = element_text(hjust = 0.5))
+    # theme(plot.title = element_text(hjust = 0.5)) + 
+    scale_x_log10() + 
+    scale_y_log10()
 ```
 
-* Number of words per doc.
+## n-words per tweets
+* Does the trump often use fewer words that other politician?
 ```{r}
-
-
 unnested %>%
-    count(id) %>%
+    count(id_str) %>%
     ggplot(aes(n))  + 
     geom_histogram()
 ```
+
+## Time series of selected words
+```{r}
+watched <- c("my", "our", "great", "you", "your", "I", "me")
+unnested %>%
+    filter(word %in% watched) %>%
+    mutate(weeks = cut(timestamp, breaks="month")) %>%
+    count(weeks, word) %>%
+    group_by(weeks) %>%
+    mutate(perc = n/sum(n),
+              )%>%
+    ungroup() %>%
+    ggplot(aes(as.Date(weeks), perc, color = word)) +
+    geom_line() 
+```
+
+
 
 ## wordcloud
 * Mentioned in 陳世榮（2015）. Bock對於目前相當流行的文字雲（word cloud）批評指出， 文字雲並不具備科學或推論意義，它僅是基於「文字頻率代表某種意義」的假設下，提供 了讀者一種無限制的解讀（Bock, 2009）
@@ -146,8 +257,10 @@ library(reshape2)
 unnested %>%
   inner_join(get_sentiments("bing")) %>%
   count(word, sentiment, sort = TRUE) %>%
-  acast(word ~ sentiment, value.var = "n", fill = 0) %>%
-  comparison.cloud(colors = c("royalblue", "tomato"),
+  acast(word ~ sentiment, value.var = "n",
+        fill = 0) %>%
+  comparison.cloud(colors = c("royalblue", 
+                              "tomato"),
                    max.words = 100)
 ```
 
@@ -160,11 +273,11 @@ summary(tweets$created)
 
 tweets.sentiment <- unnested %>%
     inner_join(get_sentiments("bing")) %>%
-    count(id, sentiment) %>%
+    count(id_str, sentiment) %>%
     spread(sentiment, n, fill=0) %>%
     mutate(sentiment=positive-negative) %>%
-    left_join(tweets, by="id") %>%
-    arrange(created) %>%
+    left_join(filtered.df, by="id_str") %>%
+    arrange(timestamp) %>%
     mutate(tindex=1:n())
 
 
@@ -173,8 +286,9 @@ ggplot(tweets.sentiment, aes(tindex, sentiment)) +
 ```
 ```{r}
 summarized <- tweets.sentiment %>%
-    mutate(yweek=sprintf("%s%02s",year(created), week(created))) %>%
-    group_by(yweek) %>%
+    mutate(weeks = cut(timestamp, breaks="month")) %>%
+    # mutate(yweek=sprintf("%s%02s",year(timestamp), week(timestamp))) %>%
+    group_by(weeks) %>%
     summarize(
         sumn = sum(negative),
         sump = sum(positive)
@@ -182,13 +296,13 @@ summarized <- tweets.sentiment %>%
     
 summarized %>%
     gather(sentiment, value, sumn, sump) %>%
-    ggplot(aes(yweek, value, fill=sentiment)) + 
+    ggplot(aes(weeks, value, fill=sentiment)) + 
     geom_col(alpha=0.7, position="identity") + 
     scale_fill_manual(values=c("sumn"="red", "sump"="blue"))
 # position: identity, stack, dodge
 
 summarized %>%
-    ggplot(aes(x=yweek, group=1)) +
+    ggplot(aes(x=weeks, group=1)) +
     geom_line(aes(y=sumn), color="tomato") + 
     geom_line(aes(y=sump), color="royalblue")
 # + 
