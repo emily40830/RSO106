@@ -8,8 +8,6 @@ output:
     highlight: zenburn
     theme: simplex
     toc: yes
-params: 
-  output_dir: "html/"
 ---
 
 # Loading data and library

@@ -55,6 +55,7 @@ all %>% summary()
 all$timestamp <- as.POSIXct(all$time)
 all$time <- NULL
 filtered.df <- all %>%
+    filter(!str_detect(text, '^"')) %>%
     filter(timestamp > as.POSIXct("2014-12-01") & 
                timestamp < as.POSIXct("2017-05-08"))
 ```
@@ -133,8 +134,9 @@ unnested <- filtered.df %>%
     # unnest_tokens(word, text, drop = FALSE) %>%
     unnest_tokens(word, text, 
                   token = "regex", pattern = "[^A-Za-z\\d#@']", 
-                  drop=FALSE) %>%
-    anti_join(stop_words)
+                  drop=FALSE) 
+# %>%
+#     anti_join(stop_words)
 ```
 
 ## hot words
@@ -193,8 +195,11 @@ unnested %>%
     mutate(perc = n/sum(n),
               )%>%
     ungroup() %>%
-    ggplot(aes(as.Date(weeks), perc, color = word)) +
-    geom_line() 
+    ggplot(aes(as.POSIXct(weeks), perc, color = word)) +
+    geom_line() + 
+    geom_vline(xintercept = as.numeric(as.POSIXct(c("2015-06-16", "2016-05-03",
+                                                    "2016-09-16", "2016-11-08"))), 
+             color="red", alpha=0.5)
 ```
 
 
@@ -298,13 +303,15 @@ summarized %>%
     gather(sentiment, value, sumn, sump) %>%
     ggplot(aes(weeks, value, fill=sentiment)) + 
     geom_col(alpha=0.7, position="identity") + 
-    scale_fill_manual(values=c("sumn"="red", "sump"="blue"))
+    scale_fill_manual(values=c("sumn"="red", "sump"="blue")) + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
 # position: identity, stack, dodge
 
 summarized %>%
     ggplot(aes(x=weeks, group=1)) +
     geom_line(aes(y=sumn), color="tomato") + 
-    geom_line(aes(y=sump), color="royalblue")
+    geom_line(aes(y=sump), color="royalblue") + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
 # + 
 #     facet_grid(sentiment~.)
     
