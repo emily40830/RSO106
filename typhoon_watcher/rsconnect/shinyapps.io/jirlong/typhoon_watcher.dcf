@@ -1,0 +1,12 @@
+name: typhoon_watcher
+title: typhoon_watcher
+username:
+account: jirlong
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 317320
+bundleId: 1307442
+url: https://jirlong.shinyapps.io/typhoon_watcher/
+when: 1523114696.82163
+asMultiple: FALSE
+asStatic: FALSE

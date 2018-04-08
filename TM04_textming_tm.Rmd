@@ -1,0 +1,121 @@
+---
+title: "TM04 Text mining with tm"
+output: 
+  html_notebook: 
+    code_folding: hide
+    number_sections: true
+    fig_caption: yes
+    highlight: zenburn
+    theme: simplex
+    toc: yes
+editor_options: 
+  chunk_output_type: inline
+---
+
+# Reference
+* https://rpubs.com/ivan_berlocher/79849
+* http://rstudio-pubs-static.s3.amazonaws.com/12422_b2b48bb2da7942acaca5ace45bd8c60c.html
+* https://tm4ss.github.io/docs/Tutorial_3_Frequency.html
+
+
+```{r}
+library(tidyverse)
+library(stringr)
+library(tidytext)
+library(jiebaR)
+library(lubridate)
+library(tm)
+```
+# Loading data
+
+```{r}
+news.df <- readRDS("data/typhoon.rds") %>%
+    filter(!is.na(text)) %>%
+    mutate(doc_id = row_number()) %>%
+    select(doc_id, everything())
+
+news.df %>% head() %>% View()
+news.df %>% str()
+anyNA(news.df$text)
+
+```
+
+
+
+
+# Building Corpus
+* The data for building Corpus should be two columns data with *doc_id* and *text* variables.
+
+```{r}
+origin.corp <- news.df %>%
+    select(doc_id, text) %>%
+    DataframeSource() %>% 
+    Corpus()
+
+origin.corp %>% str()
+```
+
+```{r}
+clean.corp <- origin.corp %>%
+    tm_map(removePunctuation) %>%
+    tm_map(removeNumbers) %>%
+    tm_map(function(word){str_replace(word, "[A-Za-z0-9]*", "")})
+
+clean.corp %>% View()
+```
+
+# Using tidytext
+## Initialize jieba tokenizar
+```{r}
+segment_not <- c("第卅六條", "第卅八條", "蘇南成")
+cutter <- worker()
+new_user_word(cutter, segment_not)
+stopWords <- readRDS("data/stopWords.rds")
+```
+
+
+```{r}
+tokenized.df <- news.df %>%
+    select(doc_id, title, text, cat, time, everything()) %>%
+    mutate(word = purrr::map(text, function(x)segment(x, cutter)))
+
+unnested.df <- tokenized.df %>%
+    select(doc_id, word) %>%
+	unnest(word) %>%
+	filter(!is.na(word)) %>%
+	count(doc_id, word) %>%
+	ungroup() %>%
+	filter(!str_detect(word, "[a-zA-Z0-9]+")) %>%
+    anti_join(as.data.frame(stopWords))
+```
+# Building dtm
+```{r}
+dtm <- cast_dtm(unnested.df, doc_id, word, n)
+class(dtm)
+```
+
+```{r}
+(test <- findFreqTerms(dtm, lowfreq = 1000))
+```
+
+# Robinson's sugession
+
+```{r}
+library(janeaustenr)
+library(tidytext)
+library(tidyverse)
+# install.packages("widyr")
+library(widyr)
+```
+
+```{r}
+data(stop_words)
+austen_books() %>%
+  unnest_tokens(ngram, text, token = "ngrams", n = 5) %>% 
+  group_by(book) %>%
+  mutate(ngram_id = row_number()) %>% 
+  unnest_tokens(word, ngram) %>% 
+    anti_join(stop_words) %>% 
+  pairwise_count(word, ngram_id) %>% head(n=120) %>% View()
+```
+

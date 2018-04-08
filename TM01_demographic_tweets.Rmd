@@ -8,6 +8,8 @@ output:
     highlight: zenburn
     theme: simplex
     toc: yes
+editor_options: 
+  chunk_output_type: inline
 ---
 
 # Libraries
@@ -50,11 +52,11 @@ names(tweets)
 ## trump's data over 2016 election
 
 ```{r}
-load("../_tweetAnalysis/alltweets.RData")
-all %>% summary()
-all$timestamp <- as.POSIXct(all$time)
-all$time <- NULL
-filtered.df <- all %>%
+# load("data/alltweets.RData")
+raw.df <- readRDS("data/alltweets.rds")
+
+raw.df %>% summary()
+filtered.df <- raw.df %>%
     filter(!str_detect(text, '^"')) %>%
     filter(timestamp > as.POSIXct("2014-12-01") & 
                timestamp < as.POSIXct("2017-05-08"))
@@ -128,7 +130,7 @@ filtered.df %>%
 
 ```{r}
 data(stop_words)
-unnested <- filtered.df %>%
+unnested.df <- filtered.df %>%
     mutate(text = str_replace_all(text, 
                                   "https://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
     # unnest_tokens(word, text, drop = FALSE) %>%
@@ -143,7 +145,7 @@ unnested <- filtered.df %>%
 
 ```{r}
 
-unnested %>%
+unnested.df %>%
     count(word) %>%
     mutate(word = reorder(word, n)) %>%
     top_n(50, wt = n) %>%
@@ -163,7 +165,7 @@ unnested %>%
 * The distribution follows an `power law distribution` (very few words occur very often, very many words occur very rare). The `Zipf law` says that the frequency of a word is reciprocal to its `rank (1 / r)`. To make the plot more readable, the axes can be logarithmized.
 
 ```{r}
-unnested %>%
+unnested.df %>%
     count(word) %>%
     count(n) %>%
     ggplot(aes(n, nn)) + 
@@ -178,7 +180,7 @@ unnested %>%
 ## n-words per tweets
 * Does the trump often use fewer words that other politician?
 ```{r}
-unnested %>%
+unnested.df %>%
     count(id_str) %>%
     ggplot(aes(n))  + 
     geom_histogram()
@@ -187,13 +189,12 @@ unnested %>%
 ## Time series of selected words
 ```{r}
 watched <- c("my", "our", "great", "you", "your", "I", "me")
-unnested %>%
+unnested.df %>%
     filter(word %in% watched) %>%
     mutate(weeks = cut(timestamp, breaks="month")) %>%
     count(weeks, word) %>%
     group_by(weeks) %>%
-    mutate(perc = n/sum(n),
-              )%>%
+    mutate(perc = n/sum(n))%>%
     ungroup() %>%
     ggplot(aes(as.POSIXct(weeks), perc, color = word)) +
     geom_line() + 
@@ -219,7 +220,7 @@ library(wordcloud)
 pal_g <- brewer.pal(9, "BuGn")[-(1:2)]
 
 
-unnested %>%
+unnested.df %>%
     count(word) %>%
     with(wordcloud(word, n, max.words = 100, 
                    random.order = F, 
@@ -227,95 +228,33 @@ unnested %>%
                    rot.per = 0))
 ```
 
-# Sentiment analysis
+## tf-idf
 ```{r}
-library(tidytext)
-sentiments
-```
-
-* The three general-purpose lexicons are
-    * `afinn` from Finn Årup Nielsen,
-    * `bing` from Bing Liu and collaborators, and
-    * `nrc` from Saif Mohammad and Peter Turney.
-
-```{r}
-get_sentiments("afinn")
-get_sentiments("bing")
-get_sentiments("nrc")
-```
-```{r}
-unnested %>%
-    count(word) %>%
-    inner_join(get_sentiments("afinn")) %>%
-    arrange(desc(n)) %>%
-    slice(1:50) %>%
-    mutate(PN = ifelse(score > 0, "positive", "negative")) %>%
-    mutate(word = reorder(word, n)) %>%
-    ggplot(aes(word, n, fill=PN)) + 
-    geom_col() + 
-    coord_flip()
-```
-
-```{r}
-library(reshape2)
-
-unnested %>%
-  inner_join(get_sentiments("bing")) %>%
-  count(word, sentiment, sort = TRUE) %>%
-  acast(word ~ sentiment, value.var = "n",
-        fill = 0) %>%
-  comparison.cloud(colors = c("royalblue", 
-                              "tomato"),
-                   max.words = 100)
-```
-
-
-
-```{r}
-library(lubridate)
-
-summary(tweets$created)
-
-tweets.sentiment <- unnested %>%
-    inner_join(get_sentiments("bing")) %>%
-    count(id_str, sentiment) %>%
-    spread(sentiment, n, fill=0) %>%
-    mutate(sentiment=positive-negative) %>%
-    left_join(filtered.df, by="id_str") %>%
-    arrange(timestamp) %>%
-    mutate(tindex=1:n())
-
-
-ggplot(tweets.sentiment, aes(tindex, sentiment)) + 
-    geom_col()
-```
-```{r}
-summarized <- tweets.sentiment %>%
-    mutate(weeks = cut(timestamp, breaks="month")) %>%
-    # mutate(yweek=sprintf("%s%02s",year(timestamp), week(timestamp))) %>%
-    group_by(weeks) %>%
-    summarize(
-        sumn = sum(negative),
-        sump = sum(positive)
-    )
+tf_idf <- unnested.df %>% 
+    anti_join(stop_words) %>%
+    filter(!str_detect(word, "\\d")) %>%
+    count(text, word, sort = T) %>%
+    bind_tf_idf(text, word, n)
     
-summarized %>%
-    gather(sentiment, value, sumn, sump) %>%
-    ggplot(aes(weeks, value, fill=sentiment)) + 
-    geom_col(alpha=0.7, position="identity") + 
-    scale_fill_manual(values=c("sumn"="red", "sump"="blue")) + 
-    theme(axis.text.x = element_text(angle = 90, hjust = 1))
-# position: identity, stack, dodge
+tf_idf %>%
+    ggplot(aes(tf_idf)) + 
+    geom_histogram(bins=100) + 
+    scale_x_sqrt()
+```
 
-summarized %>%
-    ggplot(aes(x=weeks, group=1)) +
-    geom_line(aes(y=sumn), color="tomato") + 
-    geom_line(aes(y=sump), color="royalblue") + 
-    theme(axis.text.x = element_text(angle = 90, hjust = 1))
-# + 
-#     facet_grid(sentiment~.)
+```{r}
+library(janeaustenr)
+
+book_words <- austen_books() %>%
+    unnest_tokens(word, text) %>%
+    count(book, word, sort = TRUE) %>%
+    ungroup() %>%
+    bind_tf_idf(word, book, n)
     
-    
+book_words %>%
+    ggplot(aes(tf_idf)) +
+    geom_histogram(bins = 100) + 
+    scale_x_log10()
 ```
 
 

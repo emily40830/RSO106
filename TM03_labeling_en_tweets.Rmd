@@ -1,0 +1,135 @@
+---
+title: "TM03_Labeling words"
+output: 
+  html_notebook: 
+    code_folding: hide
+    number_sections: true
+    fig_caption: yes
+    highlight: zenburn
+    theme: simplex
+    toc: yes
+---
+
+```{r}
+library(tidyverse)
+library(tidytext)
+library(stringr)
+library(jiebaR)
+options(stringsAsFactors = FALSE)
+```
+
+# # Loading data
+```{r}
+raw.df <- readRDS("data/alltweets.rds")
+filtered.df <- raw.df %>%
+    filter(!str_detect(text, '^"')) %>%
+    filter(timestamp > as.POSIXct("2014-12-01") & 
+               timestamp < as.POSIXct("2017-05-08"))
+```
+
+# # tokenized
+```{r}
+data(stop_words)
+unnested.df <- filtered.df %>%
+    mutate(text = str_replace_all(text, 
+                                  "https://t.co/[A-Za-z\\d]+|&amp;", "")) %>%
+    # unnest_tokens(word, text, drop = FALSE) %>%
+    unnest_tokens(word, text, 
+                  token = "regex", pattern = "[^A-Za-z\\d#@']", 
+                  drop = FALSE) 
+```
+
+# # sentiment analysis
+* Three general-purpose lexicons are
+    * `afinn` from Finn Årup Nielsen,
+    * `bing` from Bing Liu and collaborators, and
+    * `nrc` from Saif Mohammad and Peter Turney.
+
+## Laoding sentiment 
+
+```{r}
+sentiments %>% head()
+get_sentiments("afinn") %>% head()
+get_sentiments("bing") %>% head()
+get_sentiments("nrc") %>% head()
+```
+
+## 
+
+```{r}
+unnested.df %>%
+    count(word) %>%
+    inner_join(get_sentiments("afinn")) %>%
+    arrange(desc(n)) %>%
+    slice(1:50) %>%
+    mutate(PN = ifelse(score > 0, "positive", "negative")) %>%
+    mutate(word = reorder(word, n)) %>%
+    ggplot(aes(word, n, fill = PN)) + 
+    geom_col() + 
+    coord_flip() + theme_light()
+```
+
+```{r}
+library(reshape2)
+# install.packages("wordcloud")
+library(wordcloud)
+unnested.df %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  acast(word ~ sentiment, value.var = "n",
+        fill = 0) %>%
+  comparison.cloud(colors = c("royalblue", 
+                              "tomato"),
+                   max.words = 100)
+??comparison.cloud
+```
+
+
+
+```{r}
+library(lubridate)
+
+tweets.sentiment <- unnested.df %>%
+    inner_join(get_sentiments("bing")) %>%
+    count(id_str, sentiment) %>%
+    spread(sentiment, n, fill=0) %>%
+    mutate(sentiment=positive-negative) %>%
+    left_join(filtered.df, by="id_str") %>%
+    arrange(timestamp) %>%
+    mutate(tindex=1:n())
+
+
+ggplot(tweets.sentiment, aes(tindex, sentiment)) + 
+    geom_col()
+```
+```{r}
+summarized <- tweets.sentiment %>%
+    mutate(weeks = cut(timestamp, breaks="month")) %>%
+    # mutate(yweek=sprintf("%s%02s",year(timestamp), week(timestamp))) %>%
+    group_by(weeks) %>%
+    summarize(
+        sumn = sum(negative),
+        sump = sum(positive)
+    )
+    
+summarized %>%
+    gather(sentiment, value, sumn, sump) %>%
+    ggplot(aes(weeks, value, fill=sentiment)) + 
+    geom_col(alpha=0.7, position="identity") + 
+    scale_fill_manual(values=c("sumn"="red", "sump"="blue")) + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+# position: identity, stack, dodge
+
+summarized %>%
+    ggplot(aes(x=weeks, group=1)) +
+    geom_line(aes(y=sumn), color="tomato") + 
+    geom_line(aes(y=sump), color="royalblue") + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+# + 
+#     facet_grid(sentiment~.)
+    
+    
+```
+
+
+

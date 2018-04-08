@@ -8,6 +8,8 @@ output:
     highlight: zenburn
     theme: simplex
     toc: yes
+editor_options: 
+  chunk_output_type: inline
 ---
 
 # Loading data and library
@@ -19,7 +21,8 @@ library(jiebaR)
 library(lubridate)
 ```
 ```{r}
-news.df <- readRDS("data/typhoon.rds")
+news.df <- readRDS("data/typhoon.rds") %>%
+    mutate(doc_id = row_number())
 ```
 
 
@@ -28,7 +31,7 @@ news.df <- readRDS("data/typhoon.rds")
 ## Initialize cutter()
 * Also loading stopWords
 ```{r}
-segment_not <- c("第卅六條", "第卅八條", "蘇南成")
+segment_not <- c("第卅六條", "第卅八條", "蘇南成", "災前", "災後", "莫拉克", "颱風", "應變中心", "停班停課", "停課", "停班", "停駛", "路樹", "里長", "賀伯", "採收", "菜價", "蘇迪", "受災戶", "颱風警報", "韋恩", "台東縣", "馬總統", "豪大雨", "梅姬", "台東", "台北市政府", "工務段", "漂流木", "陳菊", "台南縣", "卡玫基", "魚塭", "救助金", "陳情", "全省", "強颱", "中颱", "輕颱", "小林村", "野溪", "蚵民", "農委會", "來襲", "中油公司", "蔣總統經國", "颱風天")
 cutter <- worker()
 new_user_word(cutter, segment_not)
 stopWords <- readRDS("data/stopWords.rds")
@@ -50,6 +53,14 @@ word.count <- tokenized.df %>%
     filter(nchar(word) > 1) %>%
     filter(!str_detect(word, "[a-zA-Z0-9]+")) %>%
     filter(n > 3)
+
+
+unnested.df <- tokenized.df %>%
+    select(doc_id, text, word) %>%
+    unnest(word) %>%
+    anti_join(stopWords) %>%
+    filter(!str_detect(word, "[a-zA-Z0-9]+"))
+
 ```
 
 ## Word frequency distribution
@@ -115,7 +126,7 @@ library(scales)
 frequency %>%
 ggplot(aes(x = early, y = lat, color = abs(early - lat))) + 
     geom_abline(color = "gray40", lty = 2) +
-    geom_jitter(alpha = 0.1, size = 2.5, width = 0.3, height = 0.3) + 
+    geom_point(alpha = 0.1, size = 2.5, width = 0.3, height = 0.3) + 
     geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5, family="Heiti TC Light") +
     scale_x_log10(labels = percent_format()) +
     scale_y_log10(labels = percent_format()) +
@@ -171,6 +182,12 @@ news_count <- tokenized.df %>%
     count(link, word) %>%
     bind_tf_idf(word, link, n) %>%
     arrange(desc(tf_idf))
+
+news_count %>%
+    ggplot(aes(tf_idf)) +
+    geom_histogram(bins = 100) + 
+    scale_x_log10()
+
 ```
 
 
@@ -178,7 +195,7 @@ news_count <- tokenized.df %>%
 news_count %>%
     left_join(news.df, by="link") %>%
     filter(!(word %in% c("NA"))) %>%
-    group_by(cat == "early") %>%
+    group_by(cat) %>%
     arrange(desc(tf_idf)) %>%
     top_n(30, tf_idf) %>%
     ungroup() %>%
@@ -191,4 +208,55 @@ news_count %>%
     theme(axis.text.y=element_text(family="Heiti TC Light"))
 ```
 
+# bigram
+
+```{r}
+recombined.df <- tokenized.df %>%
+    select(doc_id, word) %>%
+    unnest(word) %>%
+    group_by(doc_id) %>%
+    summarize(string = paste0(word, collapse = ",")) %>%
+    ungroup()
+recombined.df %>% head() %>% View()
+
+test <- tokenized.df %>%
+    select(doc_id, word) %>%
+    unnest(word) %>%
+    group_by(doc_id) %>%
+    mutate(w2 = lead(word, 1)) %>%
+    mutate(w3 = lead(word, 2)) %>%
+    mutate(w4 = lead(word, 3)) %>%
+    mutate(w5 = lead(word, 4)) %>%
+    ungroup() %>%
+    filter(complete.cases(.)) %>%
+    mutate(w12 = paste0(word, " ", w2)) %>%
+    mutate(w13 = paste0(word, " ", w3)) %>%
+    mutate(w14 = paste0(word, " ", w4)) %>%
+    mutate(w15 = paste0(word, " ", w5))
+?gather
+test %>% head(n=6) %>% View()
+bigrams <- recombined.df %>%
+  unnest_tokens(bigram, string, token = "ngrams", n = 2, drop = F)
+
+bigrams %>% head(n=200) %>% View()
+
+bigrams %>%
+    count(bigram, sort = T) %>% 
+    slice(1:500) %>%
+    View()
+
+bigrams.separated <- bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+bigrams.separated %>% head() %>% View()
+
+bigrams.filtered <- bigrams.separated %>%
+    filter(word1 != word2) %>%
+    filter(!word1 %in% stopWords$word) %>%
+    filter(!word2 %in% stopWords$word)
+
+bigrams.filtered %>%
+    count(word1, word2, sort = T) %>%
+    View()
+```
 
