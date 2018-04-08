@@ -234,12 +234,12 @@ tf_idf <- unnested.df %>%
     anti_join(stop_words) %>%
     filter(!str_detect(word, "\\d")) %>%
     count(text, word, sort = T) %>%
-    bind_tf_idf(text, word, n)
-    
+    bind_tf_idf(word, text, n)
+
 tf_idf %>%
     ggplot(aes(tf_idf)) + 
     geom_histogram(bins=100) + 
-    scale_x_sqrt()
+    scale_x_log10()
 ```
 
 ```{r}

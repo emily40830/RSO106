@@ -31,7 +31,7 @@ news.df <- readRDS("data/typhoon.rds") %>%
 ## Initialize cutter()
 * Also loading stopWords
 ```{r}
-segment_not <- c("第卅六條", "第卅八條", "蘇南成", "災前", "災後", "莫拉克", "颱風", "應變中心", "停班停課", "停課", "停班", "停駛", "路樹", "里長", "賀伯", "採收", "菜價", "蘇迪", "受災戶", "颱風警報", "韋恩", "台東縣", "馬總統", "豪大雨", "梅姬", "台東", "台北市政府", "工務段", "漂流木", "陳菊", "台南縣", "卡玫基", "魚塭", "救助金", "陳情", "全省", "強颱", "中颱", "輕颱", "小林村", "野溪", "蚵民", "農委會", "來襲", "中油公司", "蔣總統經國", "颱風天")
+segment_not <- c("第卅六條", "第卅八條", "蘇南成", "災前", "災後", "莫拉克", "颱風", "應變中心", "停班停課", "停課", "停班", "停駛", "路樹", "里長", "賀伯", "採收", "菜價", "蘇迪", "受災戶", "颱風警報", "韋恩", "台東縣", "馬總統", "豪大雨", "梅姬", "台東", "台北市政府", "工務段", "漂流木", "陳菊", "台南縣", "卡玫基", "魚塭", "救助金", "陳情", "全省", "強颱", "中颱", "輕颱", "小林村", "野溪", "蚵民", "農委會", "來襲", "中油公司", "蔣總統經國", "颱風天", "土石流", "蘇迪勒", "水利署", "陳說", "颱風假", "颱風地區", "台灣", "臺灣", "柯羅莎", "八八水災", "紓困","傅崑萁", "傅崐萁","台中", "文旦柚", "鄉鎮市公所", "鄉鎮市", "房屋稅", "高雄", "未達", "台灣省", "台北市")
 cutter <- worker()
 new_user_word(cutter, segment_not)
 stopWords <- readRDS("data/stopWords.rds")
@@ -46,19 +46,19 @@ tokenized.df <- news.df %>%
 ```
 
 ```{r}
-word.count <- tokenized.df %>%
-    unnest(word) %>%
-    count(word, sort=T) %>%
-    filter(!(word %in% stopWords$word)) %>%
-    filter(nchar(word) > 1) %>%
-    filter(!str_detect(word, "[a-zA-Z0-9]+")) %>%
-    filter(n > 3)
+# word.count <- tokenized.df %>%
+#     unnest(word) %>%
+#     count(word, sort=T) %>%
+#     filter(!(word %in% stopWords$word)) %>%
+#     filter(nchar(word) > 1) %>%
+#     filter(!str_detect(word, "[a-zA-Z0-9]+")) %>%
+#     filter(n > 3)
 
 
 unnested.df <- tokenized.df %>%
     select(doc_id, text, word) %>%
     unnest(word) %>%
-    anti_join(stopWords) %>%
+    filter(!(word %in% stopWords$word)) %>%
     filter(!str_detect(word, "[a-zA-Z0-9]+"))
 
 ```
@@ -211,17 +211,16 @@ news_count %>%
 # bigram
 
 ```{r}
-recombined.df <- tokenized.df %>%
-    select(doc_id, word) %>%
-    unnest(word) %>%
-    group_by(doc_id) %>%
-    summarize(string = paste0(word, collapse = ",")) %>%
-    ungroup()
-recombined.df %>% head() %>% View()
+# recombined.df <- tokenized.df %>%
+#     select(doc_id, word) %>%
+#     unnest(word) %>%
+#     group_by(doc_id) %>%
+#     summarize(string = paste0(word, collapse = ",")) %>%
+#     ungroup()
+# recombined.df %>% head() %>% View()
 
-test <- tokenized.df %>%
+five.gram <- unnested.df %>%
     select(doc_id, word) %>%
-    unnest(word) %>%
     group_by(doc_id) %>%
     mutate(w2 = lead(word, 1)) %>%
     mutate(w3 = lead(word, 2)) %>%
@@ -233,8 +232,86 @@ test <- tokenized.df %>%
     mutate(w13 = paste0(word, " ", w3)) %>%
     mutate(w14 = paste0(word, " ", w4)) %>%
     mutate(w15 = paste0(word, " ", w5))
-?gather
-test %>% head(n=6) %>% View()
+
+bigrams <- five.gram %>%
+    select(doc_id, w12, w13, w14, w15) %>%
+    gather("pair", "bigram", 2:5) %>%
+    select(doc_id, bigram) %>%
+    separate(bigram, c("word1", "word2"), sep = " ")
+
+bigrams %>% slice(1:20) %>% View()
+
+bigrams.count <- bigrams %>%
+    count(word1, word2, sort = T)
+
+bigrams.count %>% slice(200:400) %>% View()
+
+bigram_tf_idf <- bigrams %>%
+    unite(bigram, word1, word2, sep = " ") %>%
+    count(doc_id, bigram) %>%
+    bind_tf_idf(bigram, doc_id, n) %>%
+    arrange(desc(n))
+
+bigram_tf_idf %>%
+    arrange(desc(tf_idf)) %>%
+    slice(1:100) %>% View()
+
+
+bigrams.count %>%
+    ggplot(aes(n)) +
+    geom_histogram(bins = 100)  + 
+    scale_y_log10() + 
+    scale_x_log10()
+```
+
+# Building network
+```{r}
+library(igraph)
+bigram_graph <- bigrams.count %>%
+  filter(n > 20) %>%
+  graph_from_data_frame()
+
+library(ggraph)
+set.seed(2017)
+
+ggraph(bigram_graph, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+
+```
+## Workable 
+```{r}
+toplot <- bigrams.count %>%
+  slice(1:500)
+g <- graph.data.frame(toplot,directed = FALSE) 
+g <- simplify(g, remove.loops=T)
+l <- layout_with_kk(g)
+# l <- layout_with_mds(g)  
+# l <- layout.fruchterman.reingold(g)
+V(g)$size = log(centralization.degree(g)$res + 1)
+
+plot(g, vertex.label = V(g)$name,  
+     edge.curved = 0.2,
+     vertex.label.cex = 0.6,
+     vertex.size  = sqrt(V(g)$size)/10,
+     edge.arrow.size = 0, 
+     layout = l,
+     edge.width = log(E(g)$width-min(E(g)$width)) + 0.1,
+     # edge.width=log10(E(g)$weight),
+     vertex.label.family = 'Heiti TC Light',
+     edge.color = rgb(0.5,0.5,0.5,0.5))
+
+
+
+```
+
+
+
+
+## truncated unnest_token() only useful for EN
+
+```
 bigrams <- recombined.df %>%
   unnest_tokens(bigram, string, token = "ngrams", n = 2, drop = F)
 
@@ -258,5 +335,6 @@ bigrams.filtered <- bigrams.separated %>%
 bigrams.filtered %>%
     count(word1, word2, sort = T) %>%
     View()
+
 ```
 
