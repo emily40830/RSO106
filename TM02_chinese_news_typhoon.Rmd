@@ -43,29 +43,27 @@ tokenized.df <- news.df %>%
     select(-time) %>%
     select(title, text, cat, timestamp, everything()) %>%
     mutate(word = purrr::map(text, function(x)segment(x, cutter)))
-```
-
-```{r}
-# word.count <- tokenized.df %>%
-#     unnest(word) %>%
-#     count(word, sort=T) %>%
-#     filter(!(word %in% stopWords$word)) %>%
-#     filter(nchar(word) > 1) %>%
-#     filter(!str_detect(word, "[a-zA-Z0-9]+")) %>%
-#     filter(n > 3)
-
 
 unnested.df <- tokenized.df %>%
     select(doc_id, text, word) %>%
     unnest(word) %>%
     filter(!(word %in% stopWords$word)) %>%
     filter(!str_detect(word, "[a-zA-Z0-9]+"))
-
 ```
+
 
 ## Word frequency distribution
 
 ```{r}
+word.count <- tokenized.df %>%
+    unnest(word) %>%
+    count(word, sort=T) %>%
+    filter(!(word %in% stopWords$word)) %>%
+    filter(nchar(word) > 1) %>%
+    filter(!str_detect(word, "[a-zA-Z0-9]+")) %>%
+    filter(n > 3)
+
+
 word.count %>%
     count(n, sort=T) %>%
     ggplot(aes(log(n), log(nn))) + 
@@ -211,53 +209,27 @@ news_count %>%
 # bigram
 
 ```{r}
-# recombined.df <- tokenized.df %>%
-#     select(doc_id, word) %>%
-#     unnest(word) %>%
-#     group_by(doc_id) %>%
-#     summarize(string = paste0(word, collapse = ",")) %>%
-#     ungroup()
-# recombined.df %>% head() %>% View()
 
-five.gram <- unnested.df %>%
-    select(doc_id, word) %>%
+bigrams <- unnested.df %>%
+    select(doc_id, w1=word) %>%
     group_by(doc_id) %>%
-    mutate(w2 = lead(word, 1)) %>%
-    mutate(w3 = lead(word, 2)) %>%
-    mutate(w4 = lead(word, 3)) %>%
-    mutate(w5 = lead(word, 4)) %>%
+    mutate(w2 = lead(w1, 1)) %>%
     ungroup() %>%
-    filter(complete.cases(.)) %>%
-    mutate(w12 = paste0(word, " ", w2)) %>%
-    mutate(w13 = paste0(word, " ", w3)) %>%
-    mutate(w14 = paste0(word, " ", w4)) %>%
-    mutate(w15 = paste0(word, " ", w5))
+    filter(complete.cases(.))
 
-bigrams <- five.gram %>%
-    select(doc_id, w12, w13, w14, w15) %>%
-    gather("pair", "bigram", 2:5) %>%
-    select(doc_id, bigram) %>%
-    separate(bigram, c("word1", "word2"), sep = " ")
-
-bigrams %>% slice(1:20) %>% View()
 
 bigrams.count <- bigrams %>%
-    count(word1, word2, sort = T)
+    count(w1, w2, sort = T)
 
-bigrams.count %>% slice(200:400) %>% View()
-
-bigram_tf_idf <- bigrams %>%
-    unite(bigram, word1, word2, sep = " ") %>%
+# Time-consumed
+bigram.tf_idf <- bigrams %>%
+    unite(bigram, w1, w2, sep = " ") %>%
     count(doc_id, bigram) %>%
     bind_tf_idf(bigram, doc_id, n) %>%
     arrange(desc(n))
 
-bigram_tf_idf %>%
-    arrange(desc(tf_idf)) %>%
-    slice(1:100) %>% View()
 
-
-bigrams.count %>%
+bigrams_tf_idf %>%
     ggplot(aes(n)) +
     geom_histogram(bins = 100)  + 
     scale_y_log10() + 
